@@ -32,6 +32,12 @@ pub enum PropertyError {
     #[msg("Property is currently booked and cannot be modified")]
     PropertyCurrentlyBooked,
     
+    #[msg("Property must be set to unavailable before removal")]
+    PropertyMustBeUnavailable,
+    
+    #[msg("Property has active bookings and cannot be removed")]
+    PropertyHasActiveBookings,
+    
     // Booking errors
     #[msg("Cannot book your own property")]
     CannotBookOwnProperty,
@@ -47,6 +53,18 @@ pub enum PropertyError {
     
     #[msg("Check-out date must be after check-in date")]
     InvalidCheckOutDate,
+    
+    #[msg("Invalid booking status for this operation")]
+    InvalidBookingStatus,
+    
+    #[msg("Cannot cancel booking at this time")]
+    CannotCancelBooking,
+    
+    #[msg("Unauthorized to perform booking action")]
+    UnauthorizedBookingAction,
+    
+    #[msg("Insufficient funds in escrow account")]
+    InsufficientEscrowFunds,
     
     // Platform errors
     #[msg("Only platform authority can perform this action")]

@@ -12,7 +12,7 @@ use crate::error::PropertyError;
 use crate::state::{PlatformConfig, Property};
 
 pub fn update_property(
-    ctx: Context<ChangeProperty>,
+    ctx: Context<UpdateProperty>,
     new_name: Option<String>,
     new_symbol: Option<String>,
     new_uri: Option<String>,
@@ -96,7 +96,7 @@ pub fn update_property(
 
 #[derive(Accounts)]
 #[instruction()]
-pub struct ChangeProperty<'info> {
+pub struct UpdateProperty<'info> {
     #[account(
         mut,
         seeds = [b"property", owner.key().as_ref(), property.name.as_bytes()],
