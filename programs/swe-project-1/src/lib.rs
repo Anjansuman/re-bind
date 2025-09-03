@@ -1,15 +1,20 @@
 pub mod instructions;
 pub mod state;
+pub mod error;
 
 use anchor_lang::prelude::*;
 use instructions::*;
 use state::*;
+use error::*;
 
 declare_id!("3uhtojvL7Yq1xHkj22zguqDHjboQzLqkK7pNsTEQjwWL");
 
 #[program]
 pub mod swe_project_1 {
-    use crate::{instruction::ChangeAuthority, instructions::initialize_platform::InitializePlatform};
+    use crate::{
+        instructions::initialize_platform::InitializePlatform,
+        instructions::change_authority::ChangePlatformAuthority,
+    };
 
     use super::*;
 
@@ -17,7 +22,10 @@ pub mod swe_project_1 {
         instructions::initialize_platform::initialize_platform(ctx)
     }
 
-    pub fn change_authority(ctx: Context<ChangePlatformAuthority>, new_authority: Pubkey) -> Result<()> {
+    pub fn change_authority(
+        ctx: Context<ChangePlatformAuthority>,
+        new_authority: Pubkey,
+    ) -> Result<()> {
         instructions::change_authority::change_authority(ctx, new_authority)
     }
 
@@ -25,8 +33,16 @@ pub mod swe_project_1 {
         initialize_platform(ctx)
     }
 
-    pub fn create_property(ctx: Context<InitializePlatform>) -> Result<()> {
-        initialize_platform(ctx)
+    pub fn create_property(
+        ctx: Context<CreateProperty>,
+        name: String,
+        symbol: String,
+        uri: String,
+        price: u64,
+        location: String,
+        description: String,
+    ) -> Result<()> {
+        instructions::create_property(ctx, name, symbol, uri, price, location, description)
     }
 
     pub fn update_property(ctx: Context<InitializePlatform>) -> Result<()> {
