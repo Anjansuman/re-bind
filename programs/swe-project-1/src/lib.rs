@@ -17,7 +17,7 @@ pub mod swe_project_1 {
         instructions::initialize_platform::initialize_platform(ctx)
     }
 
-    pub fn change_authority(ctx: Context<ChangeAuthority>, new_authority: Pubkey) -> Result<()> {
+    pub fn change_authority(ctx: Context<ChangePlatformAuthority>, new_authority: Pubkey) -> Result<()> {
         instructions::change_authority::change_authority(ctx, new_authority)
     }
 

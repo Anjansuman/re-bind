@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 use crate::state::platform_config::PlatformConfig;
 
-pub fn change_authority(ctx: Context<ChangeAuthority>, new_authority: Pubkey) -> Result<()> {
+pub fn change_authority(ctx: Context<ChangePlatformAuthority>, new_authority: Pubkey) -> Result<()> {
     
     let platform_config = &mut ctx.accounts.platform_config;
 
@@ -12,7 +12,7 @@ pub fn change_authority(ctx: Context<ChangeAuthority>, new_authority: Pubkey) ->
 }
 
 #[derive(Accounts)]
-pub struct ChangeAuthority<'info> {
+pub struct ChangePlatformAuthority<'info> {
     #[account(
         mut,
         seeds = [b"platform-config"],
