@@ -3,6 +3,7 @@ pub mod change_authority;
 pub mod create_property;
 pub mod update_property;
 pub mod book_property;
+pub mod finalize_booking;
 
 // authority
 pub use initialize_platform::*;
@@ -14,3 +15,4 @@ pub use update_property::*;
 
 // booking
 pub use book_property::*;
+pub use finalize_booking::*;
