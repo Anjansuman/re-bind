@@ -42,14 +42,14 @@ pub fn create_property(
         MintTo {
             mint: ctx.accounts.property_mint.to_account_info(),
             to: ctx.accounts.owner_token_account.to_account_info(),
-            authority: ctx.accounts.property_mint.to_account_info(),
+            authority: ctx.accounts.property.to_account_info(),
         },
     );
 
     let property_mint_key = ctx.accounts.property_mint.key();
     let seeds = &[
         b"property-mint",
-        property_mint_key.as_ref(),
+        ctx.account.property.key().as_ref(),
         &[ctx.bumps.property_mint],
     ];
     let signer_seeds = &[&seeds[..]];
@@ -78,8 +78,8 @@ pub fn create_property(
         CreateMetadataAccountsV3 {
             metadata: ctx.accounts.metadata_account.to_account_info(),
             mint: ctx.accounts.property_mint.to_account_info(),
-            mint_authority: ctx.accounts.property_mint.to_account_info(),
-            update_authority: ctx.accounts.property_mint.to_account_info(),
+            mint_authority: ctx.accounts.property.to_account_info(),
+            update_authority: ctx.accounts.platform_config.to_account_info(),
             payer: ctx.accounts.owner.to_account_info(),
             system_program: ctx.accounts.system_program.to_account_info(),
             rent: ctx.accounts.rent.to_account_info(),
@@ -116,30 +116,19 @@ pub struct CreateProperty<'info> {
         seeds = [b"property-mint", property.key().as_ref()],
         bump,
         mint::decimals = 0,
-        mint::authority = property_mint,
-        mint::freeze_authority = property_mint,
+        mint::authority = property,
     )]
     pub property_mint: Account<'info, Mint>,
 
     #[account(
-        init,
+        init_if_needed,
         payer = owner,
         associated_token::mint = property_mint,
         associated_token::authority = owner,
     )]
     pub owner_token_account: Account<'info, TokenAccount>,
 
-    /// CHECK: This account will be initialized by the metadata program
-    #[account(
-        mut,
-        seeds = [
-            b"metadata",
-            metadata_program.key().as_ref(),
-            property_mint.key().as_ref(),
-        ],
-        bump,
-        seeds::program = metadata_program.key(),
-    )]
+    #[account(mut)]
     pub metadata_account: UncheckedAccount<'info>,
 
     #[account(
@@ -157,3 +146,20 @@ pub struct CreateProperty<'info> {
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
+
+/*
+
+    /// CHECK: This account will be initialized by the metadata program
+    // #[account(
+    //     mut,
+    //     seeds = [
+    //         b"metadata",
+    //         metadata_program.key().as_ref(),
+    //         property_mint.key().as_ref(),
+    //     ],
+    //     bump,
+    //     seeds::program = metadata_program.key(),
+    // )]
+    // pub metadata_account: UncheckedAccount<'info>,
+
+*/

@@ -8,6 +8,7 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
 import { ReactNode, useMemo } from "react";
+import { ContractProvider } from "./contract";
 
 
 
@@ -23,7 +24,9 @@ export default function Providers({ children }: { children: ReactNode }) {
     return (
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets}>
-                {children}
+                <ContractProvider>
+                    {children}
+                </ContractProvider>
             </WalletProvider>
         </ConnectionProvider>
     );
