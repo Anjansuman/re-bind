@@ -373,36 +373,7 @@
         },
         {
           "name": "metadata_account",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  101,
-                  116,
-                  97,
-                  100,
-                  97,
-                  116,
-                  97
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "metadata_program"
-              },
-              {
-                "kind": "account",
-                "path": "property_mint"
-              }
-            ],
-            "program": {
-              "kind": "account",
-              "path": "metadata_program"
-            }
-          }
+          "writable": true
         },
         {
           "name": "platform_config",

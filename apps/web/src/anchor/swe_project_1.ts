@@ -379,36 +379,7 @@ export type SweProject1 = {
         },
         {
           "name": "metadataAccount",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  101,
-                  116,
-                  97,
-                  100,
-                  97,
-                  116,
-                  97
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "metadataProgram"
-              },
-              {
-                "kind": "account",
-                "path": "propertyMint"
-              }
-            ],
-            "program": {
-              "kind": "account",
-              "path": "metadataProgram"
-            }
-          }
+          "writable": true
         },
         {
           "name": "platformConfig",

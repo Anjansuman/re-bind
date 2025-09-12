@@ -7,11 +7,11 @@ export default function CreateProperty() {
 
     async function handleOnClick() {
         const res = await contract?.createProperty(
-            'property_1',
-            'p_1',
+            'property_2',
+            'p_2',
             'https://www.michaelzingraf.com/storage/images/xOWyG9KJ1jqmMPFgv1KoscsYpkoQ0lCDD2WTi8WE.jpeg',
             10000,
-            'Jharkhand',
+            'Pune',
             'A Lavish villa with swimming pool.'
         )
         console.log({res});

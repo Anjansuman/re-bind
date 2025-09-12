@@ -21,6 +21,12 @@ pub fn create_property(
     location: String,
     description: String,
 ) -> Result<()> {
+    // Add debugging logs
+    msg!("Property PDA: {}", ctx.accounts.property.key());
+    msg!("Mint PDA: {}", ctx.accounts.property_mint.key());
+    msg!("Owner: {}", ctx.accounts.owner.key());
+    msg!("Token Account: {}", ctx.accounts.owner_token_account.key());
+
     let property = &mut ctx.accounts.property;
     let property_mint = &ctx.accounts.property_mint;
     let owner = &ctx.accounts.owner;
@@ -36,6 +42,20 @@ pub fn create_property(
     property.total_bookings = 0;
     property.bump = ctx.bumps.property;
 
+    // Create seeds for signing - clone name for this purpose
+    let name_clone = name.clone();
+    let name_bytes = name_clone.as_bytes();
+    let owner_key = ctx.accounts.owner.key();
+    let seeds = &[
+        b"property",
+        owner_key.as_ref(),
+        name_bytes,
+        &[ctx.bumps.property],
+    ];
+    let signer_seeds = &[&seeds[..]];
+
+    msg!("About to mint NFT");
+
     // Mint the NFT to the owner
     let cpi_context = CpiContext::new(
         ctx.accounts.token_program.to_account_info(),
@@ -46,19 +66,13 @@ pub fn create_property(
         },
     );
 
-    let property_mint_key = ctx.accounts.property_mint.key();
-    let seeds = &[
-        b"property-mint",
-        ctx.account.property.key().as_ref(),
-        &[ctx.bumps.property_mint],
-    ];
-    let signer_seeds = &[&seeds[..]];
-
     mint_to(cpi_context.with_signer(signer_seeds), 1)?;
+
+    msg!("NFT minted successfully");
 
     // Create metadata for the NFT
     let creators = vec![Creator {
-        address: ctx.accounts.platform_config.authority,
+        address: ctx.accounts.owner.key(), // Change this to owner for now
         verified: false,
         share: 100,
     }];
@@ -67,7 +81,7 @@ pub fn create_property(
         name: name,
         symbol: symbol,
         uri: uri,
-        seller_fee_basis_points: 500, // 5% royalty
+        seller_fee_basis_points: 500,
         creators: Some(creators),
         collection: None,
         uses: None,
@@ -79,21 +93,24 @@ pub fn create_property(
             metadata: ctx.accounts.metadata_account.to_account_info(),
             mint: ctx.accounts.property_mint.to_account_info(),
             mint_authority: ctx.accounts.property.to_account_info(),
-            update_authority: ctx.accounts.platform_config.to_account_info(),
+            update_authority: ctx.accounts.owner.to_account_info(), // Change to owner
             payer: ctx.accounts.owner.to_account_info(),
             system_program: ctx.accounts.system_program.to_account_info(),
             rent: ctx.accounts.rent.to_account_info(),
         },
     );
 
+    msg!("About to create metadata");
+
     create_metadata_accounts_v3(
         metadata_ctx.with_signer(signer_seeds),
         metadata,
-        false,
+        true,
         true,
         None,
     )?;
 
+    msg!("Metadata created successfully");
     msg!("Property NFT created: {}", ctx.accounts.property_mint.key());
     Ok(())
 }
@@ -128,6 +145,7 @@ pub struct CreateProperty<'info> {
     )]
     pub owner_token_account: Account<'info, TokenAccount>,
 
+    /// CHECK: This account will be initialized by the Metaplex metadata program
     #[account(mut)]
     pub metadata_account: UncheckedAccount<'info>,
 

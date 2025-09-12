@@ -1,4 +1,4 @@
-import { AnchorProvider, BN, Idl, Program } from "@coral-xyz/anchor";
+import { AnchorProvider, BN, Idl, Program, ProgramAccount } from "@coral-xyz/anchor";
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
 import { ASSOCIATED_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
@@ -6,6 +6,7 @@ import { ASSOCIATED_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/
 // contract imports should be updated everytime when contract built
 import { SweProject1 } from "./swe_project_1";
 import idl from "./swe_project_1.json";
+import { PropertyType } from "../types/PropertyType";
 
 
 export default class Contract {
@@ -74,22 +75,24 @@ export default class Contract {
         description: string,
     ): Promise<string | null> {
         try {
-
             if (!this.program) throw new Error('Program not initialized!');
 
             const owner = this.getWalletPublicKey();
+            console.log("Owner PublicKey:", owner.toBase58());
 
-            const [propertyPDA] = this.getPropertyPda(name, owner);
-            const [mintPDA] = this.getMintPda(propertyPDA);
-            const [tokenAccountPDA] = this.getTokenAccountPda(mintPDA, owner);
-            const [metadataPDA] = this.getMetadataPda(mintPDA);
-            const [platformConfigPDA] = this.getPlatformConfigPda();
+            const [propertyPDA, propertyBump] = this.getPropertyPda(name, owner);
+            const [mintPDA, mintBump] = this.getMintPda(propertyPDA);
+            const [tokenAccountPDA, tokenBump] = this.getTokenAccountPda(mintPDA, owner);
+            const [metadataPDA, metaBump] = this.getMetadataPda(mintPDA);
+            const [platformConfigPDA, configBump] = this.getPlatformConfigPda();
 
-            console.log({propertyPDA});
-            console.log({mintPDA});
-            console.log({tokenAccountPDA});
-            console.log({metadataPDA});
-            console.log({platformConfigPDA});
+            console.log("All PDAs:", {
+                property: { address: propertyPDA.toBase58(), bump: propertyBump },
+                mint: { address: mintPDA.toBase58(), bump: mintBump },
+                tokenAccount: { address: tokenAccountPDA.toBase58(), bump: tokenBump },
+                metadata: { address: metadataPDA.toBase58(), bump: metaBump },
+                platformConfig: { address: platformConfigPDA.toBase58(), bump: configBump }
+            });
 
             const res = await this.program.methods
                 .createProperty(name, symbol, uri, new BN(price), location, description)
@@ -253,7 +256,7 @@ export default class Contract {
         }
     }
 
-    public async getAllProperties(): Promise<any[]> {
+    public async getAllProperties(): Promise<ProgramAccount<PropertyType>[]> {
         try {
 
             if (!this.program) throw new Error('Program not initialized!');
