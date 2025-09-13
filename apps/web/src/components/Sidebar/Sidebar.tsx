@@ -18,6 +18,15 @@ export default function Sidebar() {
             >
                 <MdPerson size={25} />
                 <div>
+                    Booked Property
+                </div>
+            </div>
+            <div
+                className="w-full flex justify-start items-center px-4 py-2 gap-x-2 hover:bg-neutral-900 transition-colors rounded-md cursor-pointer "
+                onClick={() => updatePage(PAGE.OWNED_PROPERTY)}
+            >
+                <MdPerson size={25} />
+                <div>
                     Owned Property
                 </div>
             </div>

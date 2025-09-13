@@ -10,7 +10,7 @@ export default function CreateProperty() {
             'property_2',
             'p_2',
             'https://www.michaelzingraf.com/storage/images/xOWyG9KJ1jqmMPFgv1KoscsYpkoQ0lCDD2WTi8WE.jpeg',
-            10000,
+            20000,
             'Pune',
             'A Lavish villa with swimming pool.'
         )
