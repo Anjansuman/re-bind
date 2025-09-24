@@ -14,7 +14,7 @@ export default function PropertyCard(p: PropertyType) {
     const buttonRef = useRef<HTMLDivElement | null>(null);
     const { contract } = useContract();
     const { currentProperty, setCurrentProperty } = useCurrentBookingPropertyStore();
-    const [date, setDate] = useState<Date | undefined>(new Date());
+    const [date, setDate] = useState<DateRange | undefined>();
 
     useLayoutEffect(() => {
         if (!buttonRef.current) return;
@@ -44,10 +44,14 @@ export default function PropertyCard(p: PropertyType) {
     }, [buttonAppear]);
 
     function handleBook() {
+        console.log("handle booking - 1");
         if (!contract) return;
+        console.log("handle booking - 2");
+        if (!date || !date.from || !date.to) return;
+        console.log("handle booking - 3");
 
         // change as per need
-        contract.BookProperty(p.name, p.owner, new Date(), new Date());
+        contract.BookProperty(p.name, p.owner, date?.from, date?.to);
     }
 
     return (
@@ -108,7 +112,7 @@ export default function PropertyCard(p: PropertyType) {
                     ref={buttonRef}
                     className={cn(
                         "absolute bottom-4 bg-neutral-200 border border-neutral-800 rounded-md px-2 py-1 cursor-pointer text-neutral-800",
-                        currentProperty ? 'left-4' : 'right-4',
+                        currentProperty === p.name ? 'hidden' : 'right-4',
                     )}
                     role="button"
                     aria-hidden={!buttonAppear}
@@ -116,18 +120,33 @@ export default function PropertyCard(p: PropertyType) {
                 >
                     Book Property
                 </div>
+                <div
+                    ref={buttonRef}
+                    className={cn(
+                        'absolute bottom-4 bg-neutral-200 border border-neutral-800 rounded-md px-2 py-1 cursor-pointer text-neutral-800 ',
+                        currentProperty === p.name ? 'left-4' : 'hidden'
+                    )}
+                    onClick={handleBook}
+                >
+                    Book it now!
+                </div>
             </div>
 
             {currentProperty === p.name && (
-                <CalendarRangeDemo />
+                <CalendarRangeDemo
+                    date={date}
+                    onDateChange={(date) => setDate(date)}
+                />
             )}
 
         </div>
     );
 }
 
-function CalendarRangeDemo() {
-    const [date, setDate] = useState<DateRange | undefined>();
+function CalendarRangeDemo({ date, onDateChange }: {
+    date: DateRange | undefined,
+    onDateChange: (date: DateRange | undefined) => void,
+}) {
 
     const today = new Date();
 
@@ -137,9 +156,9 @@ function CalendarRangeDemo() {
         const { from, to } = selected;
 
 
-        if ((from && from < today ) || (from && to && to < from)) return;
+        if ((from && from < today) || (from && to && to < from)) return;
 
-        setDate(selected);
+        onDateChange(selected);
     }
 
     return (

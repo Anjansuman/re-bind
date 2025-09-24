@@ -78,22 +78,13 @@ export default class Contract {
             if (!this.program) throw new Error('Program not initialized!');
 
             const owner = this.getWalletPublicKey();
-            console.log("Owner PublicKey:", owner.toBase58());
 
-            const [propertyPDA, propertyBump] = this.getPropertyPda(name, owner);
-            const [mintPDA, mintBump] = this.getMintPda(propertyPDA);
-            const [tokenAccountPDA, tokenBump] = this.getTokenAccountPda(mintPDA, owner);
-            const [metadataPDA, metaBump] = this.getMetadataPda(mintPDA);
-            const [platformConfigPDA, configBump] = this.getPlatformConfigPda();
-
-            console.log("All PDAs:", {
-                property: { address: propertyPDA.toBase58(), bump: propertyBump },
-                mint: { address: mintPDA.toBase58(), bump: mintBump },
-                tokenAccount: { address: tokenAccountPDA.toBase58(), bump: tokenBump },
-                metadata: { address: metadataPDA.toBase58(), bump: metaBump },
-                platformConfig: { address: platformConfigPDA.toBase58(), bump: configBump }
-            });
-
+            const [propertyPDA] = this.getPropertyPda(name, owner);
+            const [mintPDA] = this.getMintPda(propertyPDA);
+            const [tokenAccountPDA] = this.getTokenAccountPda(mintPDA, owner);
+            const [metadataPDA] = this.getMetadataPda(mintPDA);
+            const [platformConfigPDA] = this.getPlatformConfigPda();
+            
             const res = await this.program.methods
                 .createProperty(name, symbol, uri, new BN(price), location, description)
                 .accountsStrict({
@@ -197,7 +188,7 @@ export default class Contract {
             const [escrowPDA] = this.getEscrowPda(bookingPDA);
 
             const res = await this.program.methods
-                .bookProperty(checkInTimestamp, checkOutTimestamp)
+                .bookProperty(new BN(checkInTimestamp), new BN(checkOutTimestamp))
                 .accountsStrict({
                     property: propertyPDA,
                     booking: bookingPDA,
